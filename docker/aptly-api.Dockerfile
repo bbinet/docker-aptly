@@ -1,4 +1,4 @@
-FROM tcpcloud/aptly
+FROM bbinet/aptly
 
 VOLUME ["/var/lib/aptly"]
 EXPOSE 8080

@@ -1,13 +1,21 @@
 #!/usr/bin/env make -f
 
-ORG ?= tcpcloud
+ORG ?= bbinet
 DIST ?= squeeze
+
+run:
+	@echo "== Running $(ORG)/aptly .."
+	docker run -ti --rm -v ${CURDIR}/volume:/var/lib/aptly -e EMAIL_ADDRESS="bruno.binet@helioslite.com" $(ORG)/aptly
+
+run-api:
+	@echo "== Running $(ORG)/aptly-api .."
+	docker run -ti --rm -v ${CURDIR}/volume:/var/lib/aptly -e EMAIL_ADDRESS="bruno.binet@helioslite.com" $(ORG)/aptly-api
 
 all: aptly aptly-api aptly-publisher aptly-public
 
 aptly:
 	@echo "== Building $(ORG)/aptly .."
-	(cd docker; docker build --no-cache --build-arg DIST=$(DIST) -t $(ORG)/aptly -f aptly.Dockerfile .)
+	(cd docker; docker build --build-arg DIST=$(DIST) -t $(ORG)/aptly -f aptly.Dockerfile .)
 	@echo "== Tagging $(ORG)/aptly .."
 	docker tag $(ORG)/aptly $(ORG)/aptly-api:$$(docker run --entrypoint=/usr/bin/aptly $(ORG)/aptly version|awk '{print $$3}'|tr -d '\r'|sed s,+,-,g)
 
